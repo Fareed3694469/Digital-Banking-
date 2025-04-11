@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Banking Portal</title>
+    <style>
+        :root {
+            --primary: #006633;
+            --secondary: #004d26;
+            --light: #f5f5f5;
+            --dark: #333;
+            --danger: #dc3545;
+            --success: #28a745;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark);
+        }
+        
+        /* Auth Pages */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--primary);
+        }
+        .auth-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .auth-box h2 {
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        .auth-box .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .auth-box label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .auth-box input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .auth-box button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .auth-box .toggle-auth {
+            margin-top: 15px;
+            color: #666;
+        }
+        .auth-box .toggle-auth a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        /* Main Banking App */
+        .banking-app {
+            display: none;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100%;
+        }
+        .logo {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .logo h2 {
+            color: white;
+        }
+        .nav-menu {
+            margin-top: 20px;
+        }
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .nav-item i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        .nav-item.active {
+            background-color: var(--secondary);
+            border-left: 4px solid white;
+        }
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .content-section {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .table th {
+            background-color: var(--primary);
+            color: white;
+        }
+        .table tr:hover {
+            background-color: #f5f5f5;
+        }
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--primary);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .balance-display {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .balance-display h4 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .balance-display h2 {
+            font-size: 32px;
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .auth-box {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Auth Pages -->
+    <div id="authPages" class="auth-container">
+        <!-- Login Page -->
+        <div id="loginPage" class="auth-box">
+            <h2>Digital Banking</h2>
+            <h3>Login to Your Account</h3>
+            <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+            </div>
+            <button onclick="login()">Login</button>
+            <div class="toggle-auth">
+                Don't have an account? <a href="#" onclick="showAuthPage('registerPage')">Register</a>
+            </div>
+        </div>
+        
+        <!-- Register Page -->
+        <div id="registerPage" class="auth-box" style="display: none;">
+            <h2>Digital Banking</h2>
+            <h3>Create New Account</h3>
+            <div class="form-group">
+                <label for="regName">Full Name</label>
+                <input type="text" id="regName" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="regEmail">Email</label>
+                <input type="email" id="regEmail" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="regPhone">Phone Number</label>
+                <input type="tel" id="regPhone" placeholder="Enter your phone number">
+            </div>
+            <div class="form-group">
+                <label for="regAddress">Address</label>
+                <input type="text" id="regAddress" placeholder="Enter your address">
+            </div>
+            <div class="form-group">
+                <label for="regPassword">Password</label>
+                <input type="password" id="regPassword" placeholder="Create a password">
+            </div>
+            <button onclick="register()">Register</button>
+            <div class="toggle-auth">
+                Already have an account? <a href="#" onclick="showAuthPage('loginPage')">Login</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Banking App -->
+    <div id="bankingApp" class="banking-app">
+        <div class="container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="logo">
+                    <h2>Digital Banking</h2>
+                </div>
+                <div class="nav-menu">
+                    <div class="nav-item" onclick="showSection('dashboard')">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('deposit')">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Deposit Money</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('transfer')">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Money Transfer</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('easypaisa')">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>EasyPaisa</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('jazzcash')">
+                        <i class="fas fa-wallet"></i>
+                        <span>JazzCash</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('bill')">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Bill Payment</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('transactions')">
+                        <i class="fas fa-history"></i>
+                        <span>Transactions</span>
+                    </div>
+                    <div class="nav-item" onclick="showSection('profile')">
+                        <i class="fas fa-user"></i>
+                        <span>Profile</span>
+                    </div>
+                    <div class="nav-item" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="header">
+                    <h2>Digital Banking Portal</h2>
+                    <div class="user-info">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User">
+                        <span id="loggedInUser">Guest</span>
+                    </div>
+                </div>
+
+                <!-- Dashboard -->
+                <div id="dashboard" class="content-section active">
+                    <div class="card">
+                        <h3 class="card-title">Account Summary</h3>
+                        <div class="balance-display">
+                            <h4>Available Balance</h4>
+                            <h2 id="currentBalance">0.00 PKR</h2>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">Quick Actions</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            <button class="btn btn-primary" onclick="showSection('deposit')">
+                                <i class="fas fa-money-bill-wave"></i> Deposit
+                            </button>
+                            <button class="btn btn-primary" onclick="showSection('transfer')">
+                                <i class="fas fa-exchange-alt"></i> Transfer
+                            </button>
+                            <button class="btn btn-primary" onclick="showSection('bill')">
+                                <i class="fas fa-file-invoice-dollar"></i> Pay Bill
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deposit Money -->
+                <div id="deposit" class="content-section">
+                    <h2>Deposit Money</h2>
+                    <form id="depositForm">
+                        <div class="form-group">
+                            <label for="depositAmount">Amount (PKR)</label>
+                            <input type="number" id="depositAmount" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="depositMethod">Payment Method</label>
+                            <select id="depositMethod" class="form-control" required>
+                                <option value="">Select Method</option>
+                                <option value="cash">Cash Deposit</option>
+                                <option value="cheque">Cheque</option>
+                                <option value="transfer">Bank Transfer</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Deposit</button>
+                    </form>
+                </div>
+
+                <!-- Money Transfer -->
+                <div id="transfer" class="content-section">
+                    <h2>Money Transfer</h2>
+                    <form id="transferForm">
+                        <div class="form-group">
+                            <label for="recipientName">Recipient Name</label>
+                            <input type="text" id="recipientName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipientAccount">Account Number</label>
+                            <input type="text" id="recipientAccount" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="transferAmount">Amount (PKR)</label>
+                            <input type="number" id="transferAmount" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="transferPurpose">Purpose</label>
+                            <input type="text" id="transferPurpose" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Transfer Money</button>
+                    </form>
+                </div>
+
+                <!-- EasyPaisa -->
+                <div id="easypaisa" class="content-section">
+                    <h2>EasyPaisa Services</h2>
+                    <form id="easypaisaForm">
+                        <div class="form-group">
+                            <label for="epMobile">Mobile Number</label>
+                            <input type="tel" id="epMobile" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="epAmount">Amount (PKR)</label>
+                            <input type="number" id="epAmount" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="epService">Service</label>
+                            <select id="epService" class="form-control" required>
+                                <option value="">Select Service</option>
+                                <option value="mobileLoad">Mobile Load</option>
+                                <option value="billPayment">Bill Payment</option>
+                                <option value="moneyTransfer">Money Transfer</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Proceed</button>
+                    </form>
+                </div>
+
+                <!-- JazzCash -->
+                <div id="jazzcash" class="content-section">
+                    <h2>JazzCash Services</h2>
+                    <form id="jazzcashForm">
+                        <div class="form-group">
+                            <label for="jcMobile">Mobile Number</label>
+                            <input type="tel" id="jcMobile" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jcAmount">Amount (PKR)</label>
+                            <input type="number" id="jcAmount" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jcService">Service</label>
+                            <select id="jcService" class="form-control" required>
+                                <option value="">Select Service</option>
+                                <option value="mobileLoad">Mobile Load</option>
+                                <option value="billPayment">Bill Payment</option>
+                                <option value="moneyTransfer">Money Transfer</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Proceed</button>
+                    </form>
+                </div>
+
+                <!-- Bill Payment -->
+                <div id="bill" class="content-section">
+                    <h2>Bill Payment</h2>
+                    <form id="billForm">
+                        <div class="form-group">
+                            <label for="billType">Bill Type</label>
+                            <select id="billType" class="form-control" required>
+                                <option value="">Select Bill Type</option>
+                                <option value="electricity">Electricity</option>
+                                <option value="gas">Gas</option>
+                                <option value="water">Water</option>
+                                <option value="internet">Internet</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="billAccount">Account Number</label>
+                            <input type="text" id="billAccount" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="billAmount">Amount (PKR)</label>
+                            <input type="number" id="billAmount" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Pay Bill</button>
+                    </form>
+                </div>
+
+                <!-- Transactions -->
+                <div id="transactions" class="content-section">
+                    <h2>Transaction History</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionHistory">
+                            <!-- Transactions will be added here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Profile -->
+                <div id="profile" class="content-section">
+                    <h2>User Profile</h2>
+                    <div class="card">
+                        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile" style="width: 80px; height: 80px; border-radius: 50%;">
+                            <div style="margin-left: 20px;">
+                                <h3 id="profileName">-</h3>
+                                <p id="profileAccount">Account No: -</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <p id="profileEmail">-</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <p id="profilePhone">-</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <p id="profileAddress">-</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Account Balance</label>
+                            <p id="profileBalance">0.00 PKR</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User Data
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        let balance = 0;
+
+        // DOM Elements
+        const authPages = document.getElementById('authPages');
+        const bankingApp = document.getElementById('bankingApp');
+        const loginPage = document.getElementById('loginPage');
+        const registerPage = document.getElementById('registerPage');
+        const loggedInUserSpan = document.getElementById('loggedInUser');
+        const currentBalanceSpan = document.getElementById('currentBalance');
+        const transactionHistoryTbody = document.getElementById('transactionHistory');
+        const profileName = document.getElementById('profileName');
+        const profileAccount = document.getElementById('profileAccount');
+        const profileEmail = document.getElementById('profileEmail');
+        const profilePhone = document.getElementById('profilePhone');
+        const profileAddress = document.getElementById('profileAddress');
+        const profileBalance = document.getElementById('profileBalance');
+
+        // Form Elements
+        const depositForm = document.getElementById('depositForm');
+        const transferForm = document.getElementById('transferForm');
+        const easypaisaForm = document.getElementById('easypaisaForm');
+        const jazzcashForm = document.getElementById('jazzcashForm');
+        const billForm = document.getElementById('billForm');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            if(localStorage.getItem('currentUser')) {
+                currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                showBankingApp();
+            }
+        });
+
+        // Auth Functions
+        function showAuthPage(pageId) {
+            loginPage.style.display = pageId === 'loginPage' ? 'block' : 'none';
+            registerPage.style.display = pageId === 'registerPage' ? 'block' : 'none';
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if(user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showBankingApp();
+            } else {
+                alert('Invalid email or password');
+            }
+        }
+
+        function register() {
+            const newUser = {
+                id: Date.now(),
+                name: document.getElementById('regName').value,
+                email: document.getElementById('regEmail').value,
+                phone: document.getElementById('regPhone').value,
+                address: document.getElementById('regAddress').value,
+                password: document.getElementById('regPassword').value,
+                balance: 0,
+                accountNumber: '03' + Math.floor(100000000 + Math.random() * 900000000)
+            };
+            
+            if(users.some(u => u.email === newUser.email)) {
+                alert('Email already registered');
+                return;
+            }
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            addTransaction('Account Opening', 0, 0);
+            showBankingApp();
+        }
+
+        function showBankingApp() {
+            authPages.style.display = 'none';
+            bankingApp.style.display = 'block';
+            loggedInUserSpan.textContent = currentUser.name;
+            balance = currentUser.balance;
+            updateBalance();
+            updateProfile();
+            updateTransactionHistory();
+            showSection('dashboard');
+        }
+
+        // Form Submissions
+        depositForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            const method = document.getElementById('depositMethod').value;
+            
+            if(amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            balance += amount;
+            currentUser.balance = balance;
+            updateUserData();
+            updateBalance();
+            addTransaction(`Deposit via ${method}`, amount, balance);
+            alert(`Successfully deposited ${amount.toFixed(2)} PKR`);
+            depositForm.reset();
+            showSection('dashboard');
+        });
+
+        transferForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            const recipientName = document.getElementById('recipientName').value;
+            const recipientAccount = document.getElementById('recipientAccount').value;
+            const purpose = document.getElementById('transferPurpose').value || 'Fund Transfer';
+            
+            if(amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if(amount > balance) {
+                alert('Insufficient balance');
+                return;
+            }
+            
+            balance -= amount;
+            currentUser.balance = balance;
+            updateUserData();
+            updateBalance();
+            addTransaction(`Transfer to ${recipientName} (${recipientAccount}) - ${purpose}`, -amount, balance);
+            alert(`Successfully transferred ${amount.toFixed(2)} PKR to ${recipientName}`);
+            transferForm.reset();
+            showSection('dashboard');
+        });
+
+        easypaisaForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('epAmount').value);
+            const mobile = document.getElementById('epMobile').value;
+            const service = document.getElementById('epService').value;
+            
+            if(amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if(amount > balance) {
+                alert('Insufficient balance');
+                return;
+            }
+            
+            balance -= amount;
+            currentUser.balance = balance;
+            updateUserData();
+            updateBalance();
+            addTransaction(`EasyPaisa ${service} to ${mobile}`, -amount, balance);
+            alert(`Successfully processed ${amount.toFixed(2)} PKR via EasyPaisa`);
+            easypaisaForm.reset();
+            showSection('dashboard');
+        });
+
+        jazzcashForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('jcAmount').value);
+            const mobile = document.getElementById('jcMobile').value;
+            const service = document.getElementById('jcService').value;
+            
+            if(amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if(amount > balance) {
+                alert('Insufficient balance');
+                return;
+            }
+            
+            balance -= amount;
+            currentUser.balance = balance;
+            updateUserData();
+            updateBalance();
+            addTransaction(`JazzCash ${service} to ${mobile}`, -amount, balance);
+            alert(`Successfully processed ${amount.toFixed(2)} PKR via JazzCash`);
+            jazzcashForm.reset();
+            showSection('dashboard');
+        });
+
+        billForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('billAmount').value);
+            const billType = document.getElementById('billType').value;
+            const account = document.getElementById('billAccount').value;
+            
+            if(amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            if(amount > balance) {
+                alert('Insufficient balance');
+                return;
+            }
+            
+            balance -= amount;
+            currentUser.balance = balance;
+            updateUserData();
+            updateBalance();
+            addTransaction(`${billType} Bill Payment - ${account}`, -amount, balance);
+            alert(`Successfully paid ${amount.toFixed(2)} PKR for ${billType} bill`);
+            billForm.reset();
+            showSection('dashboard');
+        });
+
+        // Helper Functions
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const navItems = document.querySelectorAll('.nav-item');
+            for(let i = 0; i < navItems.length; i++) {
+                if(navItems[i].getAttribute('onclick').includes(sectionId)) {
+                    navItems[i].classList.add('active');
+                    break;
+                }
+            }
+        }
+
+        function updateBalance() {
+            currentBalanceSpan.textContent = balance.toFixed(2) + ' PKR';
+            profileBalance.textContent = balance.toFixed(2) + ' PKR';
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+
+        function updateProfile() {
+            if(currentUser) {
+                profileName.textContent = currentUser.name;
+                profileAccount.textContent = 'Account No: ' + currentUser.accountNumber;
+                profileEmail.textContent = currentUser.email;
+                profilePhone.textContent = currentUser.phone;
+                profileAddress.textContent = currentUser.address;
+                profileBalance.textContent = currentUser.balance.toFixed(2) + ' PKR';
+            }
+        }
+
+        function updateTransactionHistory() {
+            transactionHistoryTbody.innerHTML = '';
+            const userTransactions = transactions.filter(t => t.userId === currentUser.id);
+            
+            if(userTransactions.length === 0) {
+                transactionHistoryTbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No transactions found</td></tr>';
+                return;
+            }
+            
+            userTransactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                const dateCell = document.createElement('td');
+                dateCell.textContent = new Date(transaction.date).toLocaleString();
+                const descCell = document.createElement('td');
+                descCell.textContent = transaction.description;
+                const amountCell = document.createElement('td');
+                amountCell.textContent = transaction.amount >= 0 ? 
+                    '+' + transaction.amount.toFixed(2) : 
+                    transaction.amount.toFixed(2);
+                amountCell.style.color = transaction.amount >= 0 ? 'green' : 'red';
+                const balanceCell = document.createElement('td');
+                balanceCell.textContent = transaction.balance.toFixed(2);
+                row.appendChild(dateCell);
+                row.appendChild(descCell);
+                row.appendChild(amountCell);
+                row.appendChild(balanceCell);
+                transactionHistoryTbody.appendChild(row);
+            });
+        }
+
+        function addTransaction(description, amount, newBalance) {
+            const transaction = {
+                id: Date.now(),
+                userId: currentUser.id,
+                date: new Date().toISOString(),
+                description,
+                amount,
+                balance: newBalance
+            };
+            transactions.push(transaction);
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            balance = newBalance;
+            currentUser.balance = balance;
+            updateUserData();
+            updateBalance();
+            updateTransactionHistory();
+        }
+
+        function updateUserData() {
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if(userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            bankingApp.style.display = 'none';
+            authPages.style.display = 'flex';
+            showAuthPage('loginPage');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+    </script>
+</body>
+</html>
